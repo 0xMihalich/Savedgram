@@ -2,7 +2,7 @@
 Program for save files from Telegram bot to PC
 
 ```
-compile with pyinstaller:
+compile with pyinstaller
 
 pyinstaller --onefile --windowed --icon=logo.ico --noconsole --name=Savedgram main.py
 
