@@ -7,7 +7,7 @@ first install required packages
 >pip install -r requirements.txt
 ```
 
-make executable package with pyinstaller
+make executable package with pyinstaller (Windows 10 and later)
 
 ```
 >pip install pyinstaller
