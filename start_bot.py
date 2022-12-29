@@ -23,28 +23,40 @@ class startBot(QThread):
         except ValidationError:
             return self.show.emit()
 
-
-        @bot.message_handler(content_types=['photo', 'document', 'animation', 'video'])
+        @bot.message_handler(content_types=['animation', 'audio', 'document', 'photo', 'video', 'voice'])
         async def download_from(message):
-            if message.photo:
-                file_id = message.photo[-1].file_id
-                file_name = f'picture_{message.photo[-1].file_unique_id}_{message.date.strftime("%Y%m%d_%H%M%S")}.jpg'
-                file_type = 'Picture'
+        
+            file = {}
+            
+            if message.animation:
+                atr = ('media', 'mp4')
+                file.update(message.animation)
+            elif message.audio:
+                atr = ('audio', 'mp3')
+                file.update(message.audio)
             elif message.document:
-                file_id = message.document.file_id
-                file_name = message.document.file_name
-                file_type = 'File'
-            elif message.animation:
-                file_id = message.animation.file_id
-                file_name = message.animation.file_name
-                file_type = 'Animation'
+                atr = ('document', 'file')
+                file.update(message.document)
+            elif message.photo:
+                atr = ('picture', 'jpg')
+                file.update(message.photo[-1])
             elif message.video:
-                file_id = message.video.file_id
-                file_name = message.video.file_name
-                file_type = 'Video'
-            await aiobot.download_file_by_id(file_id, f'{download_folder}/{file_name}')
-            ui.tray_icon.showMessage("User Info:", f"{file_type} {file_name} saved to {download_folder}")
-            del file_id, file_name, file_type
+                atr = ('video', 'mp4')
+                file.update(message.video)
+            elif message.voice:
+                atr = ('audio', 'ogg')
+                file.update(message.voice)
+            
+            if file['file_size'] > 20971520:
+                ui.tray_icon.showMessage("User Info:", f"{atr[0].capitalize()} {file['file_name']} size too big! Can't download")
+            else:
+                if not file.get('file_name'):
+                    file['file_name'] = f"{atr[0]}_{file['file_unique_id']}_{message.date.strftime('%Y%m%d_%H%M%S')}.{atr[1]}"
+                ui.tray_icon.showMessage("User Info:", f"{atr[0].capitalize()} {file['file_name']} download started")
+                await aiobot.download_file_by_id(file['file_id'], f"{download_folder}/{file['file_name']}")
+                ui.tray_icon.showMessage("User Info:", f"{atr[0].capitalize()} {file['file_name']} saved to {download_folder}")
+            
+            del atr, file
 
         if not download_folder:
             return self.show.emit()
