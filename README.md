@@ -1,7 +1,7 @@
 # Savedgram
 Program for save files from Telegram bot to PC
 
-first install required packages
+first install python 3.x and required packages
 
 ```
 >pip install -r requirements.txt
