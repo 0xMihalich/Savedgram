@@ -1,8 +1,11 @@
 import ctypes
 from os import getlogin
+from platform import system
 
 
 def get_name():
+    if system() != 'Windows':
+        return get_login()
     GetUserNameEx = ctypes.windll.secur32.GetUserNameExW
     NameDisplay = 3
  
